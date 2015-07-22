@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>踩地雷</title>
+  <meta http-equiv="Content-Type"content="text/html"charset="utf-8">
+  <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <style type="text/css">
+    body{
+       background-image:url( ' https://files.yande.re/jpeg/953be7b4cad73fdb81bdef2e7e95a9b2/yande.re%20324086%20kantai_collection%20nagato_%28kancolle%29%20naitou_ryu%20sake%20tagme%20thighhighs.jpg ' );
+      　background-repeat:no-repeat;
+      　
+    }
+    h1{
+      filter: glow(color:blue, strength=2); color:#262626; font-weight:900; text-shadow: 1px 1px 5px #E00000;
+    }
+    
+
+    
+  </style>
+    <script>
+      numMines=10;  
+      mineWidth=11; 
+      mineHeight=11;  
+
+      numCellsClicked=0;  
+      bombs=new Array();  
+      function run(){
+        mine=document.getElementById('mine'); 
+
+        for(i=0;i!=mineWidth;i++){
+          for(j=0;j!=mineHeight;j++){
+            cell=document.createElement('button');  
+            cell.setAttribute('id',i + '_' + j);  
+            cell.setAttribute('onclick','sweep(this)'); 
+            cell.setAttribute('oncontextmenu','mark(this)');  
+            cell.innerHTML='&nbsp;';  
+            mine.appendChild(cell);   
+          }
+          mine.innerHTML=mine.innerHTML+'<BR/>';  
+        }
+
+        document.getElementById('remain').innerHTML = numMines; 
+
+        for(i=0;i!=mineWidth;i++){  //設定地雷陣列的預設值為0
+          bombs[i]=new Array();
+          for(j=0;j!=mineHeight;j++){
+            bombs[i][j]=0;
+          }
+        }
+      }
+      function rand(q){
+        return Math.floor(Math.random()*(q));
+      }     
+      function sweep(obj){
+        direction_i=parseInt(obj.id.split('_')[0]); //obj的row座標
+        direction_j=parseInt(obj.id.split('_')[1]); //obj的column座標
+        if(numCellsClicked==0){
+          timer();  //第一次踩雷, 開始讀秒
+          count=0;
+          while(count!=10){ //用亂數配置地雷
+            i=rand(mineWidth);
+            j=rand(mineHeight);
+            if(bombs[i][j]!=1 && i!=direction_i && j!=direction_j){
+              count++;
+              bombs[i][j]=1;
+            }
+          }
+        }
+
+        if(obj.innerHTML=='O')  //己經標記了
+          return;       
+
+        if(bombs[direction_i][direction_j]==1){ //踩到地雷
+          clearTimeout(gameTimer);
+          obj.innerHTML='X';
+          return;
+        }
+
+        numCellsClicked++;  //踩過的數量加一
+
+        sum=0;
+        
+      if(direction_i-1>=0)
+      { 
+          sum = sum + bombs[direction_i-1][direction_j]; 
+          if(direction_j-1>=0)  
+            sum = sum + bombs[direction_i-1][direction_j-1];
+          if(direction_j+1<mineWidth) 
+            sum = sum + bombs[direction_i-1][direction_j+1];
+    }
+     if(direction_i+1<mineHeight)
+  { 
+          sum = sum + bombs[direction_i-1][direction_j]; 
+          if(direction_j-1>=0)  
+            sum = sum + bombs[direction_i+1][direction_j-1];
+          if(direction_j+1<mineWidth) 
+            sum = sum + bombs[direction_i+1][direction_j+1];
+    }
+
+        obj.innerHTML=sum;
+        obj.setAttribute('disabled','disabled');
+
+        if(numCellsClicked==mineWidth*mineHeight-numMines){ //破關
+          alert('破關!');
+          clearTimeout(gameTimer);
+        }
+      }
+      function timer(obj){
+        timer1=document.getElementById('timer');  //取得計數器
+        timer1.innerHTML = parseInt(timer1.innerHTML) + 1;  //把裡面的值加1
+        gameTimer=setTimeout('timer()',1000); //設定定時器, 每一秒執行一次timer()
+      }
+      function mark(obj){
+        marked=document.getElementById('remain');
+        if(obj.innerHTML=='O'){ //取消標記
+          obj.removeAttribute('disabled');  //取消disabled
+          obj.innerHTML='&nbsp;'; //還原內容
+          if(parseInt(marked.innerHTML)-1>=0)
+            marked.innerHTML = parseInt(marked.innerHTML)+1;
+        }else{
+          obj.innerHTML='O';  //標記
+          marked.innerHTML = parseInt(marked.innerHTML)-1;
+        }
+      }
+    </script>
+    <style>
+      button{
+        width:30px;
+        height:30px;
+      }
+      button[disabled=disabled]{
+        background-color:white;
+      }
+    </style>
+  </head>
+  <body onload="run()" onContextMenu="window.event.returnValue=false">
+  <h1 align="center" src="">踩地雷</h1>
+    <div id="mine" align="center"></div>
+    <div id="timer"align="center">0</div>
+    <div id="remain"align="center">0</div>
+  </body>
+</html>
