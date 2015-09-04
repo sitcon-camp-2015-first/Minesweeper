@@ -6,7 +6,7 @@
   <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
   <style type="text/css">
     body{
-       background-image:url( ' https://files.yande.re/jpeg/953be7b4cad73fdb81bdef2e7e95a9b2/yande.re%20324086%20kantai_collection%20nagato_%28kancolle%29%20naitou_ryu%20sake%20tagme%20thighhighs.jpg ' );
+       background-image:url(bg.jpg);
       　background-repeat:no-repeat;
       　
     }
@@ -79,23 +79,14 @@
         numCellsClicked++;  //踩過的數量加一
 
         sum=0;
-        
-      if(direction_i-1>=0)
-      { 
-          sum = sum + bombs[direction_i-1][direction_j]; 
-          if(direction_j-1>=0)  
-            sum = sum + bombs[direction_i-1][direction_j-1];
-          if(direction_j+1<mineWidth) 
-            sum = sum + bombs[direction_i-1][direction_j+1];
-    }
-     if(direction_i+1<mineHeight)
-  { 
-          sum = sum + bombs[direction_i-1][direction_j]; 
-          if(direction_j-1>=0)  
-            sum = sum + bombs[direction_i+1][direction_j-1];
-          if(direction_j+1<mineWidth) 
-            sum = sum + bombs[direction_i+1][direction_j+1];
-    }
+
+        for(var i=-1;i<=1;i++){
+          for(var j=-1;j<=1;j++){
+            if(bombs[direction_i+i]&&bombs[direction_i+i][direction_j+j]){
+              sum = sum + bombs[direction_i+i][direction_j+j];
+            }
+          }
+        }
 
         obj.innerHTML=sum;
         obj.setAttribute('disabled','disabled');
@@ -121,6 +112,7 @@
           obj.innerHTML='O';  //標記
           marked.innerHTML = parseInt(marked.innerHTML)-1;
         }
+        return false; //不要跳出右鍵選單
       }
     </script>
     <style>
@@ -133,7 +125,7 @@
       }
     </style>
   </head>
-  <body onload="run()" onContextMenu="window.event.returnValue=false">
+  <body onload="run()" onContextMenu="event.preventDefault()">
   <h1 align="center" src="">踩地雷</h1>
     <div id="mine" align="center"></div>
     <div id="timer"align="center">0</div>
